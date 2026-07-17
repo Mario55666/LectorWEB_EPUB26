@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lector EPUB (Diseño fijo)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <h1>Lector EPUB</h1>
+      <span id="layoutBadge" class="badge hidden">Diseño fijo · animaciones</span>
+      <span id="fontBadge" class="badge badge-font hidden" title="Tipografía del libro, tal como el autor la definió"></span>
+    </div>
+
+    <div class="controls">
+      <label class="file-btn">
+        Abrir .epub
+        <input type="file" id="fileInput" accept=".epub,application/epub+zip" hidden>
+      </label>
+      <button id="prevBtn" class="icon-btn" title="Página anterior" disabled>&#10094;</button>
+      <button id="nextBtn" class="icon-btn" title="Página siguiente" disabled>&#10095;</button>
+      <button id="fullscreenBtn" class="icon-btn" title="Pantalla completa" disabled>&#9974;</button>
+    </div>
+  </header>
+
+  <main id="stage">
+    <div id="dropHint">
+      <h2 class="hint-title">¿Cómo funciona esta aplicación?</h2>
+      <ol class="hint-steps">
+        <li>Arrastra un archivo <strong>.epub</strong> aquí o usa el botón "Abrir .epub".</li>
+        <li>Si el libro es de <strong>diseño fijo</strong> (cómics, libros ilustrados), se detecta solo y se muestra página a página, con sus animaciones CSS/JS activas.</li>
+        <li>Navega con las flechas <strong>‹ ›</strong> de la barra superior, las flechas del teclado, o tocando a los lados de la página.</li>
+        <li>Los <strong>videos e hipervínculos</strong> dentro del libro se abren ampliados en una ventana emergente del navegador, sin salir de la lectura.</li>
+        <li>La <strong>tipografía original del libro</strong> se identifica y se respeta siempre: el lector nunca reemplaza ni distorsiona las fuentes del autor.</li>
+        <li>Usa el botón de pantalla completa para leer sin distracciones. La barra inferior muestra tu progreso de lectura.</li>
+      </ol>
+    </div>
+
+    <div id="loadingSpinner" class="spinner hidden" aria-hidden="true"></div>
+
+    <div id="viewer" class="viewer hidden"></div>
+  </main>
+
+  <footer class="statusbar">
+    <span id="statusText">Sin libro cargado</span>
+    <div class="progress-track">
+      <div id="progressFill" class="progress-fill"></div>
+    </div>
+    <span class="credit">Curso de Infografía 2026 &middot; Mg Mario Quiroz Martinez</span>
+  </footer>
+
+  <div id="popupToast" class="toast hidden" role="status"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
