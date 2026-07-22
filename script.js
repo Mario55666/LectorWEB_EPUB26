@@ -11,6 +11,7 @@ const fullscreenBtn = document.getElementById('fullscreenBtn');
 const statusText = document.getElementById('statusText');
 const progressFill = document.getElementById('progressFill');
 const popupToast = document.getElementById('popupToast');
+const dimensionsBadge = document.getElementById('dimensionsBadge');
 
 let book = null;
 let rendition = null;
@@ -87,7 +88,13 @@ const fitViewerToBook = () => {
     viewerEl.style.removeProperty('width');
     viewerEl.style.removeProperty('height');
     viewerEl.style.removeProperty('max-width');
+    if (dimensionsBadge) dimensionsBadge.classList.add('hidden');
     return;
+  }
+
+  if (dimensionsBadge) {
+    dimensionsBadge.textContent = `${Math.round(bookAspect.width)}×${Math.round(bookAspect.height)} px`;
+    dimensionsBadge.classList.remove('hidden');
   }
 
   const stageStyles = getComputedStyle(stage);
@@ -405,6 +412,43 @@ const attachContentLinkHandling = (_section, view) => {
   }
 };
 
+// Verifica nombres de archivo de imágenes: avisa si tienen >15 caracteres,
+// espacios o signos especiales (no alfanuméricos, punto, guión o guión bajo).
+const checkImageFileNames = (_section, view) => {
+  try {
+    const win = (view && view.window) || (view && view.iframe && view.iframe.contentWindow);
+    const doc = win && win.document;
+    if (!doc) return;
+
+    const selectors = 'img[src], video[src], video source[src], audio[src], source[src]';
+    const elements = doc.querySelectorAll(selectors);
+    const problematic = [];
+
+    elements.forEach((el) => {
+      const src = el.getAttribute('src') || '';
+      if (!src) return;
+      const name = src.split('/').pop().split('?')[0];
+      if (!name) return;
+
+      const hasSpaces = /\s/.test(name);
+      const hasSpecials = /[^a-zA-Z0-9._-]/.test(name);
+      const tooLong = name.length > 15;
+
+      if (tooLong || hasSpaces || hasSpecials) {
+        problematic.push(name);
+      }
+    });
+
+    if (problematic.length > 0) {
+      const unique = [...new Set(problematic)];
+      showToast(`Aviso: ${unique.length} imagen(es) con nombre problemático (más de 15 caracteres, espacios o signos especiales).`);
+      console.warn('Imágenes con nombres problemáticos:', unique);
+    }
+  } catch (err) {
+    console.warn('No se pudieron verificar los nombres de imagen', err);
+  }
+};
+
 const openBook = async (file) => {
   if (!file) return;
 
@@ -470,6 +514,7 @@ const openBook = async (file) => {
     rendition.on('rendered', attachContentLinkHandling);
     rendition.on('rendered', syncBookAspectRatio);
     rendition.on('rendered', syncFontBadge);
+    rendition.on('rendered', checkImageFileNames);
     rendition.on('relocated', updateProgress);
 
     await rendition.display();
@@ -490,6 +535,7 @@ const openBook = async (file) => {
     setStatus('Error al abrir el archivo. ¿Es un .epub válido?');
     viewerEl.classList.add('hidden');
     dropHint.classList.remove('hidden');
+    if (dimensionsBadge) dimensionsBadge.classList.add('hidden');
     book = null;
   } finally {
     setLoading(false);

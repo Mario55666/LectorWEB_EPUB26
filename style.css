@@ -99,6 +99,15 @@ body {
   background: rgba(249, 115, 22, 0.12);
 }
 
+.dimensions-badge {
+  color: #c084fc;
+  border-color: #c084fc;
+  background: rgba(192, 132, 252, 0.12);
+  text-transform: none;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
 @media (max-width: 900px) {
   .badge-font {
     display: none;
